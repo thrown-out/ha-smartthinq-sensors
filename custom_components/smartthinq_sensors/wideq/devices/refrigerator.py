@@ -473,11 +473,14 @@ class RefrigeratorStatus(DeviceStatus):
             return None
         if isinstance(status, str) and status.upper() == "IGNORE":
             return None
+        item_key = self._get_state_key(state_key)
+        if not self._device._get_feature_info(item_key):
+            item_key = FEATURE_KEY_IGNORE
         return self._update_feature(
             feature,
             status,
             True,
-            self._get_state_key(state_key),
+            item_key,
         )
 
     def update_status(self, key, value):
