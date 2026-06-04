@@ -206,6 +206,34 @@ REFRIGERATOR_SENSORS: tuple[ThinQSensorEntityDescription, ...] = (
         value_fn=lambda x: x.temp_freezer,
     ),
     ThinQSensorEntityDescription(
+        key=RefrigeratorFeatures.FRIDGE_STATUS,
+        name="Fridge status",
+        icon="mdi:fridge",
+    ),
+    ThinQSensorEntityDescription(
+        key=RefrigeratorFeatures.FREEZER_STATUS,
+        name="Freezer status",
+        icon="mdi:snowflake",
+    ),
+    ThinQSensorEntityDescription(
+        key=RefrigeratorFeatures.ICE_MAKER1_STATUS,
+        name="Ice maker 1 status",
+        icon="mdi:cube-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=RefrigeratorFeatures.ICE_MAKER2_STATUS,
+        name="Ice maker 2 status",
+        icon="mdi:cube-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
+        key=RefrigeratorFeatures.ICE_MAKER3_STATUS,
+        name="Ice maker 3 status",
+        icon="mdi:cube-outline",
+        entity_registry_enabled_default=False,
+    ),
+    ThinQSensorEntityDescription(
         key=RefrigeratorFeatures.FRESHAIRFILTER_REMAIN_PERC,
         name="Fresh air filter remaining",
         icon="mdi:air-filter",
