@@ -47,6 +47,11 @@ STATE_EXPRESS_FRIDGE = ["", "expressFridge"]
 STATE_EXPRESS_MODE = ["", "expressMode"]
 STATE_FRIDGE_TEMP = ["TempRefrigerator", "fridgeTemp"]
 STATE_FREEZER_TEMP = ["TempFreezer", "freezerTemp"]
+STATE_FRIDGE_STATUS = ["FridgeStatus", "fridgeStatus"]
+STATE_FREEZER_STATUS = ["FreezerStatus", "freezerStatus"]
+STATE_ICE_MAKER1_STATUS = ["IceMaker1Status", "iceMaker1Status"]
+STATE_ICE_MAKER2_STATUS = ["IceMaker2Status", "iceMaker2Status"]
+STATE_ICE_MAKER3_STATUS = ["IceMaker3Status", "iceMaker3Status"]
 
 CMD_STATE_ECO_FRIENDLY = [CTRL_BASIC, ["SetControl", "basicCtrl"], STATE_ECO_FRIENDLY]
 CMD_STATE_ICE_PLUS = [CTRL_BASIC, ["SetControl", "basicCtrl"], STATE_ICE_PLUS]
@@ -454,6 +459,30 @@ class RefrigeratorStatus(DeviceStatus):
                 return None
         return str(temp_key)
 
+    def _get_feature_status(self, state_key, feature):
+        """Return the enum status for a specific feature if available."""
+        if not self.key_exist(state_key):
+            return None
+
+        data_key = self._get_data_key(state_key)
+        if not data_key:
+            return None
+
+        status = self.lookup_enum(state_key)
+        if not status:
+            return None
+        if isinstance(status, str) and status.upper() == "IGNORE":
+            return None
+        item_key = self._get_state_key(state_key)
+        if not self._device._get_feature_info(item_key):
+            item_key = FEATURE_KEY_IGNORE
+        return self._update_feature(
+            feature,
+            status,
+            True,
+            item_key,
+        )
+
     def update_status(self, key, value):
         """Update device status."""
         if not super().update_status(key, value):
@@ -553,6 +582,41 @@ class RefrigeratorStatus(DeviceStatus):
         key = STATE_EXPRESS_MODE[1]
         status = self.lookup_enum(key)
         return self._update_feature(RefrigeratorFeatures.EXPRESSMODE, status, True, key)
+
+    @property
+    def fridge_status(self):
+        """Return current fridge compartment status."""
+        return self._get_feature_status(
+            STATE_FRIDGE_STATUS, RefrigeratorFeatures.FRIDGE_STATUS
+        )
+
+    @property
+    def freezer_status(self):
+        """Return current freezer compartment status."""
+        return self._get_feature_status(
+            STATE_FREEZER_STATUS, RefrigeratorFeatures.FREEZER_STATUS
+        )
+
+    @property
+    def ice_maker1_status(self):
+        """Return current status for the primary ice maker."""
+        return self._get_feature_status(
+            STATE_ICE_MAKER1_STATUS, RefrigeratorFeatures.ICE_MAKER1_STATUS
+        )
+
+    @property
+    def ice_maker2_status(self):
+        """Return current status for the secondary ice maker."""
+        return self._get_feature_status(
+            STATE_ICE_MAKER2_STATUS, RefrigeratorFeatures.ICE_MAKER2_STATUS
+        )
+
+    @property
+    def ice_maker3_status(self):
+        """Return current status for the craft ice maker."""
+        return self._get_feature_status(
+            STATE_ICE_MAKER3_STATUS, RefrigeratorFeatures.ICE_MAKER3_STATUS
+        )
 
     @property
     def smart_saving_state(self):
@@ -663,6 +727,11 @@ class RefrigeratorStatus(DeviceStatus):
             self.ice_plus_status,
             self.express_fridge_status,
             self.express_mode_status,
+            self.fridge_status,
+            self.freezer_status,
+            self.ice_maker1_status,
+            self.ice_maker2_status,
+            self.ice_maker3_status,
             self.smart_saving_mode,
             self.fresh_air_filter_status,
             self.fresh_air_filter_remain_perc,
